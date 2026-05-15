@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mistik Matematik Görevi: Eralp Edition</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component@1.3.3/dist/aframe-environment-component.min.js"></script>
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; user-select: none; overflow: hidden; }
+        
+        #giris-ekrani {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, #1a2f1a 0%, #0a140a 100%);
+            z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #a8ffb2;
+        }
+
+        #ust-bar {
+            position: absolute; top: 20px; left: 0; width: 100%;
+            display: flex; justify-content: space-around; align-items: center; z-index: 10;
+        }
+
+        .hud-kutu { background: rgba(0, 0, 0, 0.85); padding: 10px 20px; border-radius: 8px; border: 2px solid #55ff55; color: white; }
+        
+        #cevap-alani { display: flex; align-items: center; gap: 10px; }
+        input { padding: 8px; background: #051405; color: #55ff55; border: 1px solid #55ff55; border-radius: 5px; font-weight: bold; font-size: 16px; text-align: center; width: 120px;}
+        
+        .btn {
+            padding: 8px 15px; background: #55ff55; color: #000; border: none; border-radius: 5px;
+            font-weight: bold; cursor: pointer; text-transform: uppercase;
+        }
+        .btn:hover { background: #fff; }
+
+        #zaman-paneli {
+            background: rgba(0, 0, 0, 0.85); padding: 10px 15px; border-radius: 8px; border: 2px solid #ffaa00; display: flex; gap: 8px;
+        }
+        .btn-zaman { background: #ffaa00; color: black; padding: 6px 12px; font-size: 12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .btn-zaman:hover { background: #fff; }
+
+        #altyazi-alani {
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.9); color: #55ff55; padding: 15px 40px; border-radius: 30px;
+            font-weight: bold; font-size: 16px; z-index: 10; text-align: center; border: 2px solid #55ff55;
+            box-shadow: 0 0 15px rgba(85,255,85,0.4); width: 60%;
+        }
+
+        /* YENİ FOTOĞRAFLI TEBRİK EKRANI */
+        #tebrik-ekrani {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, #153015 0%, #051005 100%); z-index: 105; flex-direction: column;
+            align-items: center; justify-content: center; color: #55ff55; text-align: center;
+        }
+        .pinterest-kedi {
+            width: 320px; height: auto; border: 4px solid #ffaa00; border-radius: 15px;
+            margin: 20px 0; box-shadow: 0 0 25px rgba(255, 170, 0, 0.6);
+            animation: buyu 1.5s ease-out;
+        }
+        @keyframes buyu { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <!-- GİRİŞ EKRANI -->
+    <div id="giris-ekrani">
+        <h1 style="font-size: 40px; letter-spacing: 4px; margin-bottom: 0; text-shadow: 0 0 10px #55ff55;">7. SINIF MATEMATİK GÖREVİ</h1>
+        <h2 style="font-size: 20px; color: #ffffff; letter-spacing: 2px; margin-top: 5px; margin-bottom: 20px; font-style: italic; text-shadow: 0 0 5px #ffaa00;">by Eralp</h2>
+        <div style="font-size: 40px; margin-bottom: 15px;"></div>
+        <button class="btn" style="width: 200px; height: 50px; box-shadow: 0 0 15px #55ff55;" onclick="oyunuBaslat()">BAŞLAT</button>
+    </div>
+
+    <!-- OYUN BİTTİ EKRANI (YENİ KEDİ GÖRSELİ BURADA) -->
+    <div id="tebrik-ekrani">
+        <h1 style="font-size: 45px; text-shadow: 0 0 15px #ffaa00; color: #ffaa00;">TEBRİKLER ERALP! 🏆</h1>
+        <p style="font-size: 20px; color: white; max-width: 600px;">Tüm mistik denklemleri başarıyla çözdün!</p>
+        
+        <!-- Güncellediğimiz Yeni Kedi Linki -->
+        <img class="pinterest-kedi" src="https://i.pinimg.com/736x/02/bf/e0/02bfe0a5c3cfdba702978083fa54490c.jpg" alt="Eralp Yeni Kedi">
+        
+        <p style="font-style: italic; color: #a8ffb2; font-size: 18px; margin-top: 5px;">"Matematik şampiyonu kedi seni yürekten selamlıyor!"</p>
+    </div>
+
+    <!-- ÜST BAR -->
+    <div id="ust-bar">
+        <div class="hud-kutu" id="kapi-etiket" style="font-weight: bold; color: #55ff55;">1. MİSTİK KAPI</div>
+        
+        <div class="hud-kutu" id="cevap-alani">
+            <input type="number" id="cevap-girdisi" placeholder="X = ?">
+            <button class="btn" onclick="cevapKontrol()">Cevapla</button>
+        </div>
+
+        <div id="zaman-paneli">
+            <button class="btn-zaman" onclick="zamaniDegistir('gunduz')">☀️ GÜNDÜZ</button>
+            <button class="btn-zaman" onclick="zamaniDegistir('aksam')">🌙 AKŞAM</button>
+        </div>
+    </div>
+
+    <!-- ALTYAZI -->
+    <div id="altyazi-alani">...</div>
+
+    <a-scene>
+        <!-- DOĞA ALANI -->
+        <a-entity id="orman-havasi" environment="preset: forest; lighting: forest; playArea: 1.5; stageSize: 40; dressingAmount: 30; seed: 45"></a-entity>
+
+        <!-- Oyuncu -->
+        <a-entity id="oyuncu" camera look-controls wasd-controls="acceleration: 75" position="0 1.6 0"></a-entity>
+
+        <!-- Patika Sınırları -->
+        <a-box position="-4 2 -20" width="0.4" height="4" depth="45" color="#2b1a0e" material="roughness: 0.9"></a-box>
+        <a-box position="4 2 -20" width="0.4" height="4" depth="45" color="#2b1a0e" material="roughness: 0.9"></a-box>
+
+        <!-- ================= 3D ERALP NPC MODELİ ================= -->
+        <a-entity id="eralp-npc" position="0 0.2 -3" animation="property: position; to: 0 0.4 -3; dir: alternate; loop: true; dur: 1500">
+            <a-sphere position="0 1.6 0" radius="0.22" color="#ffdbac"></a-sphere>
+            <a-sphere position="-0.07 1.65 0.18" radius="0.03" color="#000"></a-sphere>
+            <a-sphere position="0.07 1.65 0.18" radius="0.03" color="#000"></a-sphere>
+            <a-box position="0 1.05 0" width="0.5" height="0.7" depth="0.3" color="#ff3333"></a-box>
+            <a-box position="-0.33 1.1 0" width="0.13" height="0.5" depth="0.15" color="#ff3333"></a-box>
+            <a-box position="0.33 1.1 0" width="0.13" height="0.5" depth="0.15" color="#ff3333"></a-box>
+            <a-cylinder position="-0.13 0.4 0" radius="0.08" height="0.6" color="#3366cc"></a-cylinder>
+            <a-cylinder position="0.13 0.4 0" radius="0.08" height="0.6" color="#3366cc"></a-cylinder>
+            <a-text value="ERALP" position="0 2.1 0" color="#55ff55" width="5" align="center" font="mozillavr" bold="true"></a-text>
+        </a-entity>
+
+        <!-- ================= KAPILAR VE SORULAR ================= -->
+        <a-box id="kapi1" position="0 2 -6" width="7.6" height="4" depth="0.2" color="#ff3355" material="opacity:0.85; transparent:true"></a-box>
+        <a-text value="1) 4x = 24" position="-1 2.5 -5.8" color="#FFF" width="8" font="mozillavr" bold="true"></a-text>
+
+        <a-box id="kapi2" position="0 2 -11" width="7.6" height="4" depth="0.2" color="#ff6633" material="opacity:0.85; transparent:true"></a-box>
+        <a-text value="2) 2x - 3 = 11" position="-1.2 2.5 -10.8" color="#FFF" width="8" font="mozillavr" bold="true"></a-text>
+
+        <a-box id="kapi3" position="0 2 -16" width="7.6" height="4" depth="0.2" color="#ffcc33" material="opacity:0.85; transparent:true"></a-box>
+        <a-text value="3) 3x + 5 = 26" position="-1.2 2.5 -15.8" color="#FFF" width="8" font="mozillavr" bold="true"></a-text>
+
+        <a-box id="kapi4" position="0 2 -21" width="7.6" height="4" depth="0.2" color="#33ff66" material="opacity:0.85; transparent:true"></a-box>
+        <a-text value="4) 2 * (x + 4) = 20" position="-1.6 2.5 -20.8" color="#FFF" width="8" font="mozillavr" bold="true"></a-text>
+
+        <a-box id="kapi5" position="0 2 -26" width="7.6" height="4" depth="0.2" color="#33ccff" material="opacity:0.85; transparent:true"></a-box>
+        <a-text value="5) (x / 2) - 1 = 4" position="-1.4 2.5 -25.8" color="#FFF" width="8" font="mozillavr" bold="true"></a-text>
+
+        <a-box id="kapi6" position="0 2 -31" width="7.6" height="4" depth="0.2" color="#9933ff" material="opacity:0.85; transparent:true"></a-box>
+        <a-text value="6) FINAL: 5x - 4 = 3x + 8" position="-1.8 2.5 -30.8" color="#FFF" width="8" font="mozillavr" bold="true"></a-text>
+
+        <!-- BİTİŞ NESNESİ -->
+        <a-entity id="elmas" position="0 1.5 -36" geometry="primitive: octahedron" material="color: #ffaa00; metalness: 0.8" animation="property: rotation; to: 0 360 0; loop: true; dur: 2000"></a-entity>
+    </a-scene>
+
+    <script>
+        var aktifKapi = 1;
+        var cevaplar = { 1: "6", 2: "7", 3: "7", 4: "6", 5: "10", 6: "6" };
+
+        function oyunuBaslat() {
+            document.getElementById("giris-ekrani").style.display = "none";
+            document.getElementById("altyazi-alani").innerHTML = "<span style='color:#ffaa00;'>ERALP (NPC):</span> Hoş geldin gardaş! Önündeki tüm denklemleri çöz ve bu mistik ormandan çık!";
+        }
+
+        function cevapKontrol() {
+            var girdi = document.getElementById("cevap-girdisi").value;
+            if (girdi == cevaplar[aktifKapi]) {
+                KapiyiAc();
+            } else {
+                document.getElementById("altyazi-alani").innerHTML = "<span style='color:#ff3333;'>SİSTEM:</span> Yanlış hesaplama yaptın gardaş, tılsımlı duvar açılmadı!";
+            }
+        }
+
+        function KapiyiAc() {
+            document.getElementById("kapi" + aktifKapi).setAttribute('animation', {property: 'position', to: '0 -4 ' + (-5 * aktifKapi - 1), dur: 1000, easing: 'easeOutQuad'});
+            
+            aktifKapi++;
+            document.getElementById("cevap-girdisi").value = "";
+
+            if (aktifKapi <= 6) {
+                document.getElementById("kapi-etiket").innerText = aktifKapi + ". MİSTİK KAPI";
+                document.getElementById("altyazi-alani").innerHTML = "<span style='color:#55ff55;'>ERALP (NPC):</span> Helal olsun gardaş! Bir sonraki denkleme doğru ilerle.";
+            } else {
+                document.getElementById("ust-bar").style.display = "none";
+                document.getElementById("altyazi-alani").style.display = "none";
+                document.getElementById("tebrik-ekrani").style.display = "flex";
+            }
+        }
+
+        function zamaniDegistir(mod) {
+            var orman = document.getElementById("orman-havasi");
+            if (mod === 'aksam') {
+                orman.setAttribute("environment", {
+                    preset: "forest", lighting: "point", lightPosition: "0 0 0",
+                    skyType: "gradient", skyColor: "#050010", horizonColor: "#110022", dressingAmount: 30
+                });
+                document.getElementById("altyazi-alani").innerHTML = "<span style='color:#ffaa00;'>SİSTEM:</span> Zaman akşama çevrildi. Gece yürüyüşü başlasın!";
+            } else {
+                orman.setAttribute("environment", {
+                    preset: "forest", lighting: "forest", skyType: "color", skyColor: "#a3d1ff", dressingAmount: 30
+                });
+                document.getElementById("altyazi-alani").innerHTML = "<span style='color:#ffaa00;'>SİSTEM:</span> Güneş açtı, zaman gündüze çevrildi.";
+            }
+        }
+    </script>
+</body>
+</html>
